@@ -1,6 +1,6 @@
 # Greedy search for the best Minimally Complex Spin Models
 
-This program allows to **uncover community structures (in binary data)** that **takes into account high order patterns of data**. It is complementary to the program available here, which perform an exhaustive search for the best community. This program performs a greedy search for the best community, which is more appropriate for large systems (more than 15 spin variables).
+This program allows to **uncover community structures (in binary data)** that **takes into account high order patterns of data**. It is complementary to the program available here, which perform an exhaustive search for the best community. This program performs a greedy search for the best community, which is more appropriate for large systems (more than `15` spin variables).
 
 The idea of the algorithm is based on performing statistical inference with a family of spin models (maximum entropy models for binary data) with minimal information theoretic complexity. Details can be found in Ref. [1].
 
