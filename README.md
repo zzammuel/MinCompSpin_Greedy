@@ -1,6 +1,10 @@
-# Greedy search for the best Minimally Complex Spin Models
+# Greedy search
+# for the best Minimally Complex spin Models (MCM)
 
-This program allows to **uncover community structures (in binary data)** that **takes into account high order patterns of data**. It is complementary to the program available here, which perform an exhaustive search for the best community. This program performs a greedy search for the best community, which is more appropriate for large systems (more than `15` spin variables).
+This program allows to **find community structures in binary data**, taking into account possible **high order patterns** of data in the detection of the communities (i.e., possible high-order correlations between the variables). It is complementary to the program available [here](https://github.com/clelidm/MinCompSpin), which performs an exhaustive search for the best community. This program performs a greedy search for the best community, which is more appropriate for large systems (more than `15` spin variables).
+
+
+The idea of the algorithm is based on performing statistical inference with a family of spin models (maximum entropy models for binary data) that have minimal information theoretic complexity. These models are called Minimally Complex Models (MCM). Details can be found in Ref. [1].
 
 The idea of the algorithm is based on performing statistical inference with a family of spin models (maximum entropy models for binary data) with minimal information theoretic complexity. Details can be found in Ref. [1].
 
