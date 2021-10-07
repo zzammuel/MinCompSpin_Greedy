@@ -10,7 +10,18 @@ The idea of the algorithm is based on performing statistical inference with a fa
 
 ----
 
-This repository contains a code developed for the paper Ref. [1] on *Statistical Inference of Minimally Complex Models* available in [arXiv:2008.00520](https://arxiv.org/abs/2008.00520). The code performs an exhaustive search for the best Minimally Complex Spin Model (MCM) on a given basis. 
+This repository contains a code developed for the paper Ref. [1] on *Statistical Inference of Minimally Complex Models* available in [arXiv:2008.00520](https://arxiv.org/abs/2008.00520). The code performs a greedy search for the best Minimally Complex Spin Model (MCM) on a basis provided by the user. This greedy approach is useful for systems with a large number of variables, `n > 15`. 
+
+The code performs an hierarchical merging procedure to find an optimal MCM on the basis provided by the user.
+
+To do so, the code start by re-writing the data in the new basis provided. It then start `r` communities
+
+The code performs an hierarchical merging procedure to find an optimal MCM. It starts with `r` communities, where `r` is the number of basis operators provided.
+
+is the each of them having 
+
+
+We start from the IM based on the basis operators b∗ identified above, which is an MCM with n ICC 375 ofrankra =1. We merge two ICCs Ma andMa′ inall possible ways. Among these combinations, we identify the pair that yields a maximal increase of the evidence in Eq. (8) and merge the corresponding ICCs. This procedure generates an approximation of the MCM that achieves a maximal value 380 of the evidence along the hierarchical merging process, as the number of ICCs varies from n to 1.
 
 The code go through all possible MCMs of a given rank `r`, where an MCM is defined by a given partition of the `r` basis operators provided (see paper). The comparison between models is based on their evidence (posterior probability that the model generates the data, integrated over its parameter values). The selected model is the one with the largest evidence.
 
