@@ -21,7 +21,7 @@ The code performs an hierarchical merging procedure to find an optimal MCM. It s
 is the each of them having 
 
 
-We start from the IM based on the basis operators b∗ identified above, which is an MCM with n ICC 375 ofrankra =1. We merge two ICCs Ma andMa′ inall possible ways. Among these combinations, we identify the pair that yields a maximal increase of the evidence in Eq. (8) and merge the corresponding ICCs. This procedure generates an approximation of the MCM that achieves a maximal value 380 of the evidence along the hierarchical merging process, as the number of ICCs varies from n to 1.
+We start from the IM based on the basis operators b∗ identified above, which is an MCM with n ICC ofrank r=1. We merge two ICCs Ma andMa′ inall possible ways. Among these combinations, we identify the pair that yields a maximal increase of the evidence in Eq. (8) and merge the corresponding ICCs. This procedure generates an approximation of the MCM that achieves a maximal value 380 of the evidence along the hierarchical merging process, as the number of ICCs varies from n to 1.
 
 The code go through all possible MCMs of a given rank `r`, where an MCM is defined by a given partition of the `r` basis operators provided (see paper). The comparison between models is based on their evidence (posterior probability that the model generates the data, integrated over its parameter values). The selected model is the one with the largest evidence.
 
