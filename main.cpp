@@ -1,6 +1,5 @@
-//g++ -std=c++11 -O3 main.cpp Operations_OnData.cpp LogE.cpp LogL.cpp Complexity.cpp Basis_Choice.cpp RandomPart.cpp 
-// Best_MCM.cpp 
-//time ./a.out
+// To compile: g++ -std=c++11 -O3 main.cpp Operations_OnData.cpp LogE.cpp LogL.cpp Complexity.cpp Basis_Choice.cpp RandomPart.cpp 
+// To run: time ./a.out
 //
 #define _USE_MATH_DEFINES
 #include <iostream>
