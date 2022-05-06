@@ -41,7 +41,7 @@ To efficiently generate all possible set partitions of these `r` operators, we u
 
 The code uses the C++11 version of C++.
 
-**To compile:** `g++ -std=c++11 -O3 main.cpp Operations_OnData.cpp LogE.cpp LogL.cpp Complexity.cpp Basis_Choice.cpp RandomPart.cpp info_quant.cpp Generate_data_exact.cpp`
+**To compile:** `g++ -std=c++11 -O3 run.cpp Operations_OnData.cpp LogE.cpp LogL.cpp info_quant.cpp Complexity.cpp`
 
 **To execute:** `./a.out`
 
