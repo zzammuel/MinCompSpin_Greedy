@@ -96,6 +96,17 @@ map<__int128_t, double> MCM_distr(map<__int128_t, unsigned int> Kset, map<unsign
 map<unsigned int, __int128_t> read_communities(string file);
 list<Interaction> write_interactions(double J, string file);
 
+// Check if subset
+bool is_subset(map<unsigned int, __int128_t> fp1, map<unsigned int, __int128_t> fp2);
+
+/********************************************************************/
+/*********************    METROPOLIS.CPP    *************************/
+/********************************************************************/
+/*******************    SAMPLES A DATASET    ************************/
+/********************************************************************/
+map<unsigned int, list<Interaction>> write_interactions_metropolis(double J, string file);
+double delta_energy(__int128_t state, list<Interaction> edges);
+void sample_data_metropolis(double J, string input_file, string output_filename, unsigned int N = 1000);
 
 /********************************************************************/
 /*****************    GENERATE_DATA_EXACT.CPP    ********************/

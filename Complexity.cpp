@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <bitset>
 #include <cmath>       /* tgamma */
 #include <map>

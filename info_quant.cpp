@@ -8,6 +8,25 @@ using namespace std;
 
 #include "data.h"
 
+bool is_subset(map<unsigned int, __int128_t> fp1, map<unsigned int, __int128_t> fp2)
+{
+    bool flag1 = true;
+    bool flag2 = false;
+    // Check if fp1 can be merged such that it becomes fp2
+    for (auto& c1 : fp1)
+    {
+        for (auto& c2 : fp2)
+        {
+            if ((c1.second & c2.second) == c1.second)
+            {
+                flag2 = true;
+            }
+        }
+        if (!flag2) { flag1 = false; break; }
+    }
+    return flag2;
+}
+
 double Entropy(map <__int128_t, unsigned int> Kset, unsigned int N)
 {
     // Entropy of emperical data
@@ -41,6 +60,10 @@ map<__int128_t, double> cartesianProd(map<__int128_t, double> Map1, map<__int128
 map<__int128_t, double> emp_dist(map<__int128_t, unsigned int> Kset, unsigned int N)
 {
     map<__int128_t, double> EMP;
+    if (n > 20)
+    {
+        return EMP;
+    }
     for (auto& elem : Kset)
     {
         EMP[elem.first] = (double)elem.second / (double)N;
@@ -59,7 +82,7 @@ map<__int128_t, double> MCM_distr(map<__int128_t, unsigned int> Kset, map<unsign
     __int128_t Ai, s;
     unsigned int ks, tot_size = 1;
 
-    if (Partition.size() > 30) { cout << "Too many communities!" << endl; return distr; }
+    if (n > 20) { cout << "Too many nodes! JSD is unreliable!" << endl << endl; return distr; }
 
     for (auto& comm : Partition)
     {
@@ -73,7 +96,7 @@ map<__int128_t, double> MCM_distr(map<__int128_t, unsigned int> Kset, map<unsign
         tot_size *= sub_distr[Ai].size();
     }
 
-    if (tot_size > 100000000) { cout << "Too many states!" << endl; return distr; }
+    if (tot_size > 100000000) { cout << "Too many states! JSD is unreliable!" << endl << endl; return distr; }
 
     it = Partition.begin();
     distr = sub_distr[(*it).second]; it++;

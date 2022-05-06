@@ -136,7 +136,7 @@ void Sample_dataset(list<Interaction> list_I, string output_filename, unsigned i
 
 // Randomly sampled "N" data points using the Cumulative:
   double eps=0;
-  uint32_t j=0;
+  __int128_t j=0;
 
 // OUTPUT FILE:
   fstream file(output_filename.c_str(), ios::out);
@@ -147,10 +147,17 @@ void Sample_dataset(list<Interaction> list_I, string output_filename, unsigned i
     j=0;
     while(cumul[j]<eps && j < (1 << n))
     { j++;  }
-    file << bitset<n>(j) << endl;
+
+    bitset<n> hi{ static_cast<unsigned long long>(j >> 64) },
+        lo{ static_cast<unsigned long long>(j) },
+        bits{ (hi << 64) | lo };
+    file << bits << endl;
   }
 
   file.close();
+
+  delete[] p;
+  delete[] cumul;
 }
 
 /******************************************************************************/

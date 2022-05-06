@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <bitset>
 #include <cmath>       /* tgamma */
 #include <map>
@@ -20,18 +21,18 @@ double GeomComplexity_SubCM(unsigned int m);
 // This function is mainly used for call by `LogE_PartMCM`,
 // but can also be used to compute the log-likelihood of a complete model
 //
-double LogE_SubC_forMCM(map<uint64_t, unsigned int> Kset, uint32_t m, unsigned int N)
+double LogE_SubC_forMCM(map<__int128_t, unsigned int> Kset, uint32_t m, unsigned int N)
 {
   double LogE = 0;
 
-  map<uint64_t, unsigned int>::iterator it;
+  map<__int128_t, unsigned int>::iterator it;
   unsigned int Ncontrol = 0; // for control
   unsigned int Ks = 0;
 
   for (it = Kset.begin(); it!=Kset.end(); ++it)
   {
     Ks = (it->second);  Ncontrol += Ks;
-    if (Ks == 0) {cout << "problem Ks = 0 for mu_m = " << (it->first) << endl; }
+    if (Ks == 0) {cout << "problem Ks = 0 for some mu_m" << endl; }
     LogE += lgamma(Ks + 0.5);
   }
   if (Ncontrol != N) { cout << "Error Likelihood function: Ncontrol != N" << endl;  }
@@ -47,34 +48,38 @@ double LogE_SubC_forMCM(map<uint64_t, unsigned int> Kset, uint32_t m, unsigned i
 // to compute the log-likelihood of a sub-complete model
 // Rem: the function compute the LogE as if the space were reduced to the sub-space defined by the model
 
-double LogE_SubCM(map<uint64_t, unsigned int> Kset, uint64_t Ai, unsigned int N, bool print_bool = false)
+double LogE_SubCM(map<__int128_t, unsigned int> Kset, __int128_t Ai, unsigned int N, bool print_bool = false)
 {
-  map<uint64_t, unsigned int>::iterator it;
-  map<uint64_t, unsigned int> Kset_new;
+  map<__int128_t, unsigned int>::iterator it;
+  map<__int128_t, unsigned int> Kset_new;
 
-  uint64_t s;        // state
+  __int128_t s;        // state
   unsigned int ks=0; // number of time state s appear in the dataset
 
   if (print_bool)  { 
-  cout << endl << "--->> Build Kset for SC Model based on "  << Ai << " = " << bitset<n>(Ai) << " for MCM.." << endl;
+  cout << endl << "--->> Build Kset for SC Model based on " << bitset<n>(Ai) << " for MCM.." << endl;
   }
 //Build Kset:
   for (it = Kset.begin(); it!=Kset.end(); ++it)
   {
     s = it->first;      // initial state s 
     ks = it->second;    // # of times s appears in the data set
-    if (print_bool)  {  cout << s << ": \t" << bitset<n>(s) << " \t" ;  }
+    if (print_bool)  {  cout << bitset<n>(s) << " \t" ;  }
 
     s &= Ai;   // troncated state: take only the bits indicated by Ai
 //    sig_m = bitset<m>(bitset<m>(mu).to_string()).to_ulong(); //bitset<m>(mu).to_ulong(); // mu|m
-    if (print_bool)  {  cout << s << ": \t" << bitset<n>(s) << endl; }
+    if (print_bool)  {  cout << bitset<n>(s) << endl; }
 
     Kset_new[s] += ks;
     //Kset[mu_m].second.push_back(make_pair(mu, N_mu));
   }
   if (print_bool)  {  cout << endl;  }
 
-  return LogE_SubC_forMCM(Kset_new, bitset<n>(Ai).count(), N);
+  bitset<n> hi{ static_cast<unsigned long long>(Ai >> 64) },
+      lo{ static_cast<unsigned long long>(Ai) },
+      bits{ (hi << 64) | lo };
+
+  return LogE_SubC_forMCM(Kset_new, bits.count(), N);
 }
 
 /******************************************************************************/
@@ -100,7 +105,7 @@ bool check_partition(map<uint32_t, uint32_t> Partition)
   return (bitset<n>(sum).count() == rank);
 }
 
-double LogE_MCM(map<uint64_t, unsigned int> Kset, map<unsigned int, uint64_t> Partition, unsigned int N, bool print_bool = false)
+double LogE_MCM(map<__int128_t, unsigned int> Kset, map<unsigned int, __int128_t> Partition, unsigned int N, bool print_bool = false)
 {
   //if (!check_partition(Partition)) {cout << "Error, the argument is not a partition." << endl; return 0;  }
 
@@ -108,12 +113,16 @@ double LogE_MCM(map<uint64_t, unsigned int> Kset, map<unsigned int, uint64_t> Pa
   //{
     double LogE = 0; 
     unsigned int rank = 0;
-    map<unsigned int, uint64_t>::iterator Part;
+    map<unsigned int, __int128_t>::iterator Part;
 
     for (Part = Partition.begin(); Part != Partition.end(); Part++)
     {
+        bitset<n> hi{ static_cast<unsigned long long>((*Part).second >> 64) },
+            lo{ static_cast<unsigned long long>((*Part).second) },
+            bits{ (hi << 64) | lo };
+
       LogE += LogE_SubCM(Kset, (*Part).second, N);
-      rank += bitset<n>((*Part).second).count();
+      rank += bits.count();
     }  
     return LogE - ((double) (N * (n-rank))) * log(2.);
   //}
