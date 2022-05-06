@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -14,14 +15,14 @@
 /**************************     READ FILE    **********************************/
 /******************************************************************************/
 /**************    READ DATA and STORE them in Nset    ************************/
-map<uint64_t, unsigned int> read_datafile(unsigned int *N)    // O(N)  where N = data set size
+map<__int128_t, unsigned int> read_datafile(unsigned int *N)    // O(N)  where N = data set size
 {
-  string line, line2;     uint64_t nb = 0;
+  string line, line2;     __int128_t nb = 0;
   (*N) = 0;            // N = dataset size
   cout << endl << "--->> Read \"" << datafilename << "\",\t Build Nset... 444";
 
 // ***** data are store in Nset:  ********************************
-  map<uint64_t, unsigned int> Nset; // Nset[mu] = #of time state mu appears in the data set
+  map<__int128_t, unsigned int> Nset; // Nset[mu] = #of time state mu appears in the data set
   
   ifstream myfile (datafilename.c_str());
   if (myfile.is_open())
@@ -43,14 +44,14 @@ map<uint64_t, unsigned int> read_datafile(unsigned int *N)    // O(N)  where N =
   return Nset;
 }
 
-void Print_File_Nset(map<uint64_t, unsigned int> Nset)
+void Print_File_Nset(map<__int128_t, unsigned int> Nset)
 {
   cout << "tesg" << endl;
 }
   /*
-  map<uint64_t, unsigned int>::iterator it;
+  map<__int128_t, unsigned int>::iterator it;
   it=Nset.begin();
-  uint64_t s;
+  __int128_t s;
 
   s=it->first;
   cout << s << endl;  
@@ -69,12 +70,12 @@ void Print_File_Nset(map<uint64_t, unsigned int> Nset)
 /******************************************************************************/
 // Given a choice of a model (defined by the m basis vector) --> return the new m-state (state in the new m-basis)
 // Rem: must have m <= n 
-uint64_t transform_mu_basis(uint64_t mu, list<uint64_t> basis)
+__int128_t transform_mu_basis(__int128_t mu, list<__int128_t> basis)
 {
-  uint64_t bit_i = 1;
-  uint64_t final_mu = 0;
+  __int128_t bit_i = 1;
+  __int128_t final_mu = 0;
 
-  list<uint64_t>::iterator phi_i;
+  list<__int128_t>::iterator phi_i;
 
   for(phi_i = basis.begin(); phi_i != basis.end(); ++phi_i)
   {
@@ -94,15 +95,15 @@ uint64_t transform_mu_basis(uint64_t mu, list<uint64_t> basis)
 // Build Kset for the states written in the basis of the m-chosen independent 
 // operator on which the SC model is based:
 
-map<uint64_t, unsigned int> build_Kset(map<uint64_t, unsigned int> Nset, list<uint64_t> Basis, bool print_bool=false)
+map<__int128_t, unsigned int> build_Kset(map<__int128_t, unsigned int> Nset, list<__int128_t> Basis, bool print_bool=false)
 // sig_m = sig in the new basis and cut on the m first spins 
 // Kset[sig_m] = #of time state mu_m appears in the data set
 {
-  map<uint64_t, unsigned int>::iterator it;
-  map<uint64_t, unsigned int > Kset;
+  map<__int128_t, unsigned int>::iterator it;
+  map<__int128_t, unsigned int > Kset;
 
-  uint64_t s;        // initial state
-  uint64_t sig_m;    // transformed state and to the m first spins
+  __int128_t s;        // initial state
+  __int128_t sig_m;    // transformed state and to the m first spins
 
   unsigned int ks=0; // number of time state s appear in the dataset
 
