@@ -10,21 +10,22 @@ using namespace std;
 
 bool is_subset(map<unsigned int, __int128_t> fp1, map<unsigned int, __int128_t> fp2)
 {
-    bool flag1 = true;
-    bool flag2 = false;
+    bool flag;
     // Check if fp1 can be merged such that it becomes fp2
     for (auto& c1 : fp1)
     {
+        flag = false;
         for (auto& c2 : fp2)
         {
             if ((c1.second & c2.second) == c1.second)
             {
-                flag2 = true;
+                flag = true;
+                break;
             }
         }
-        if (!flag2) { flag1 = false; break; }
+        if (!flag) { break; }
     }
-    return flag2;
+    return flag;
 }
 
 double Entropy(map <__int128_t, unsigned int> Kset, unsigned int N)
