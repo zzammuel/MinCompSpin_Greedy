@@ -347,21 +347,41 @@ int main()
     cout << "######### EMPERICAL #########" << endl;
     // Entropy of dataset
     double H = Entropy(Kset, N);
-    cout << "H : " << H << ". Range: [0, " << N << "]" << endl << endl;
+    cout << "H : " << H << ". Range: [0, " << n << "]" << endl << endl;
 
     cout << "#########  GREEDY   #########" << endl;
     // Log evidence of MCM
-    double LE = LogE_MCM(Kset, fp1, N);
+    double LE_g = LogE_MCM(Kset, fp1, N);
     Print_Partition(fp1);
 
 
-    map<__int128_t, double> greedy_prob = MCM_distr(Kset, fp1, N);
+    /*map<__int128_t, double> greedy_prob = MCM_distr(Kset, fp1, N);
     map<__int128_t, double> emp_prob = emp_dist(Kset, N);
-    double JSD = JS_divergence(greedy_prob, emp_prob, N);
+    double JSD = JS_divergence(greedy_prob, emp_prob, N);*/
 
-    cout << "Elapsed time    : " << elapsed.count() << "s" << endl;
-    cout << "Log-evidence    : " << LE << endl;
-    cout << "JSD(emp || mcm) : " << JSD << endl << endl;
+    cout << "Elapsed time      : " << elapsed.count() << "s" << endl;
+    cout << "Log-evidence      : " << LE_g << endl;
+    //cout << "JSD(emp || mcm)   : " << JSD << endl;
+    cout << "Average comm size : " << (double)n / (double)fp1.size() << endl << endl;
+
+    cout << "#########  THEORETICAL   #########" << endl;
+    map<unsigned int, __int128_t> fp2 = read_communities("INPUT/brain_subcom.dat");
+
+    double LE_t = LogE_MCM(Kset, fp2, N);
+    Print_Partition(fp2);
+
+    cout << "Log-evidence      : " << LE_t << endl;
+    cout << "Average comm size : " << (double)n / (double)fp2.size() << endl << endl;
+
+    cout << "#########  COMPARATIVE MEASURES   #########" << endl;
+    double VOI = Var_of_Inf(fp1, fp2);
+    double NMI = Norm_Mut_info(fp1, fp2);
+    string istrue = is_subset(fp1, fp2) ? "Yes" : "No";
+
+    cout << "Is MCM_g \'subset\' of MCM_t    : " << istrue << endl;
+    cout << "Variation of Information      : " << VOI << endl;
+    cout << "Normalized Mutual Information : " << NMI << endl;
+    cout << "Difference in Log-Evidence    : " << LE_g - LE_t << endl << endl;
 
     return 0;
 }
