@@ -20,6 +20,55 @@ bitset<n> bitset128(__int128_t Op)
     return bits;
 }
 
+map<unsigned int, list<Interaction>> hypergraph_interactions(double J, unsigned int s, string file)
+{
+    string line, word;
+    __int128_t Op2, Op = 1;
+    Op <<= (n - 1);
+
+    char c = '1';
+
+    map<unsigned int, list<Interaction>> I_list;
+    Interaction I;
+
+    // Open file and read hypergraph
+    ifstream myfile(file.c_str());
+    if (myfile.is_open())
+    {
+        while (getline(myfile, line))
+        {
+            stringstream ss(line);
+            string Operator, Weight;
+
+            if (ss >> Operator >> Weight)
+            {
+                Op2 = 1;
+                Op2 = (Op2 << n - 1);
+                I.Op = 0;
+                for (auto &elem: Operator)
+                {
+                    if (elem == c) { I.Op += Op2; }
+                    Op2 = Op2 >> 1;
+                }
+
+
+                I.g = (double)stoi(Weight) * J;
+            }
+
+            for (unsigned int i = 0; i < n; i++)
+            {
+                if ((Op >> i) & I.Op)
+                {
+                    I_list[i].push_back(I);
+                }
+            }
+        }
+        myfile.close();
+    }
+
+    return I_list;
+}
+
 map<unsigned int, list<Interaction>> write_interactions_metropolis(double J, string file)
 {
     string line, line2;
@@ -30,7 +79,7 @@ map<unsigned int, list<Interaction>> write_interactions_metropolis(double J, str
     __int128_t Op = 1;
     Op <<= (n - 1);
 
-    bool flag = false;
+    int flag;
 
     // Open file to read network
     ifstream myfile(file.c_str());
@@ -43,10 +92,19 @@ map<unsigned int, list<Interaction>> write_interactions_metropolis(double J, str
             I.Op = 0;
             I.g = J;
             // Read nodes involved in interaction
+            flag = 2;            
             while (getline(ss, line2, '\t'))
             {
-                node = stoi(line2) - 1;
-                I.Op += (Op >> node);
+                if (flag > 0) 
+                {
+                    node = stoi(line2) - 1;
+                    I.Op += (Op >> node);
+                }
+                else
+                { 
+                    I.g *= stoi(line2); 
+                }
+                flag--;
             }
             // Add interaction to list corresponding to 2nd node
             I_list[node].push_back(I);
@@ -80,7 +138,7 @@ double delta_energy(__int128_t state, list<Interaction> edges, int spin)
     return diff_E;
 }
 
-void sample_data_metropolis(double J, string input_file, string output_filename, unsigned int N = 1000)
+void sample_data_metropolis(double J, unsigned int s, string input_file, string output_filename, unsigned int N = 1000)
 {
     map<unsigned int, list<Interaction>> IA;
     list<Interaction> edges;
@@ -89,7 +147,21 @@ void sample_data_metropolis(double J, string input_file, string output_filename,
     double eps, energy, diff_E;
 
     // INTERACTIONS:
+    //IA = hypergraph_interactions(J, s, input_file);
     IA = write_interactions_metropolis(J, input_file);
+
+    /*Interaction I;
+    I.Op = 3;
+    I.g = 4 * J;
+
+    IA[21].push_back(I);
+    IA[20].push_back(I);
+
+    
+    IA[21].push_back(I);
+    IA[2].push_back(I);
+    IA[1].push_back(I);
+    IA[0].push_back(I);*/
 
     // INITIAL ENERGY
     for (auto& elem_map : IA)
@@ -124,6 +196,8 @@ void sample_data_metropolis(double J, string input_file, string output_filename,
     // OUTPUT FILE:
     fstream file(output_filename.c_str(), ios::out);
 
+    float progress; //cout << endl;
+
     for (int i = 0; i < N; i++)
     {
         for (int interval = 0; interval < 100 * n; interval++)
@@ -142,8 +216,25 @@ void sample_data_metropolis(double J, string input_file, string output_filename,
         }
         bitset<n> bits = bitset128(state);
         
+        /*int barWidth = 70;
+
+        std::cout << "[";
+        int pos = barWidth * progress;
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos) std::cout << "=";
+            else if (i == pos) std::cout << ">";
+            else std::cout << " ";
+        }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
+
+        progress += 1.0/(float)N; // for demonstration only*/
+
+
         file << bits << endl;
     }
+
+    //cout << endl;
 
     file.close();
 }
