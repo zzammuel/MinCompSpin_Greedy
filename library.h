@@ -1,11 +1,8 @@
-
-/******************************************************************************/
-/******************     READ and TRANSFORM DATA    ****************************/
-/******************************************************************************/
+#include <set>
 
 /*** READ DATA and STORE data in Nset:    *************************************/
 /******************************************************************************/
-map<__int128_t, unsigned int> read_datafile(unsigned int *N); // filename to specify in data.h
+map<__int128_t, unsigned int> read_datafile(unsigned int *N, string file = datafilename); // filename to specify in data.h
 
 /*** READ BASIS from a FILE:    ***********************************************/
 /******************************************************************************/
@@ -56,8 +53,8 @@ double LogL_CM(map<__int128_t, unsigned int > Kset, unsigned int N);
 
 /****************************    for a MCM     ********************************/
 /******************************************************************************/
-double LogL_MCM(map<__int128_t, unsigned int> Kset, map<unsigned int, __int128_t> Partition, unsigned int N, bool print_bool = false);
-double LogE_MCM(map<__int128_t, unsigned int> Kset, map<unsigned int, __int128_t> Partition, unsigned int N, bool print_bool = false);
+double LogL_MCM(map<__int128_t, unsigned int> Kset, map<unsigned int, __int128_t> Partition, unsigned int N, unsigned int r = n, bool print_bool = false);
+double LogE_MCM(map<__int128_t, unsigned int> Kset, map<unsigned int, __int128_t> Partition, unsigned int N, unsigned int r = n, bool print_bool = false);
 double Complexity_MCM(map<uint32_t, uint32_t> Partition, unsigned int N, double *C_param, double *C_geom);
 
 /******************************************************************************/
@@ -106,7 +103,7 @@ bool is_subset(map<unsigned int, __int128_t> fp1, map<unsigned int, __int128_t> 
 /********************************************************************/
 map<unsigned int, list<Interaction>> write_interactions_metropolis(double J, string file);
 double delta_energy(__int128_t state, list<Interaction> edges);
-void sample_data_metropolis(double J, string input_file, string output_filename, unsigned int N = 1000);
+void sample_data_metropolis(double J, unsigned int s, string input_file, string output_filename, unsigned int N = 1000);
 
 /********************************************************************/
 /*****************    GENERATE_DATA_EXACT.CPP    ********************/
@@ -134,3 +131,15 @@ void Sample_dataset_AND_Print_ModelData_Info(list<Interaction>& list_I, string o
 double* Probability_AllStates_Ising(list<Interaction> list_I, double* Z);
 int Op_Ising(uint32_t Op, uint32_t state);
 void Model_averages_Ising(list<Interaction>& list_I);
+
+/******************************************************************************/
+/************************** Best Basis ****************************************/
+/******************************************************************************/
+
+
+set<Operator> PairOp_m1_data_rank(map<uint32_t, unsigned int> Nset, unsigned int N);
+set<Operator> AllOp_m1_data_rank(map<uint32_t, unsigned int> Nset, unsigned int N);
+void add_new_basisOp(uint32_t new_basisOp, set<uint32_t> &OpSet, vector<unsigned int> &vect_op_used, int layer);
+vector<pair<Operator, bool> > select_best_basis(set<Operator> &allOp_data, double Nd, double *LogL, int basis_size = n);
+void printfile_BestBasis(vector<pair<Operator, bool>> Op, double Nd, string name);
+list<__int128_t> Original_basis();

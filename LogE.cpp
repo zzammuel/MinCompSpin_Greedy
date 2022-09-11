@@ -105,7 +105,7 @@ bool check_partition(map<uint32_t, uint32_t> Partition)
   return (bitset<n>(sum).count() == rank);
 }
 
-double LogE_MCM(map<__int128_t, unsigned int> Kset, map<unsigned int, __int128_t> Partition, unsigned int N, bool print_bool = false)
+double LogE_MCM(map<__int128_t, unsigned int> Kset, map<unsigned int, __int128_t> Partition, unsigned int N, unsigned int r = n, bool print_bool = false)
 {
   //if (!check_partition(Partition)) {cout << "Error, the argument is not a partition." << endl; return 0;  }
 

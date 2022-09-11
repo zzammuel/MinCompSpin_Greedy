@@ -79,7 +79,7 @@ map<unsigned int, __int128_t> read_communities(string file)
 /**************************     READ FILE    **********************************/
 /******************************************************************************/
 /**************    READ DATA and STORE them in Nset    ************************/
-map<__int128_t, unsigned int> read_datafile(unsigned int *N)    // O(N)  where N = data set size
+map<__int128_t, unsigned int> read_datafile(unsigned int *N, string file = datafilename)    // O(N)  where N = data set size
 {
     string line, line2;     char c = '1';
   __int128_t nb = 0, Op;
@@ -89,7 +89,7 @@ map<__int128_t, unsigned int> read_datafile(unsigned int *N)    // O(N)  where N
 // ***** data are store in Nset:  ********************************
   map<__int128_t, unsigned int> Nset; // Nset[mu] = #of time state mu appears in the data set
 
-  ifstream myfile (datafilename.c_str());
+  ifstream myfile (file.c_str());
   if (myfile.is_open())
   {
     while ( getline (myfile,line))
@@ -97,12 +97,13 @@ map<__int128_t, unsigned int> read_datafile(unsigned int *N)    // O(N)  where N
         Op = 1;
         Op = (Op << n - 1);
         nb = 0;
-      line2 = line.substr (0,n);          //take the n first characters of line
-      for (auto &elem: line2)
-      {
-          if (elem == c) { nb += Op; }
-          Op = Op >> 1;
-      }
+        line2 = line.substr (0,n);          //take the n first characters of line
+        for (auto &elem: line2)
+        {
+            if (elem == c) { nb += Op; }
+            Op = Op >> 1;
+        }
+        
       Nset[nb] += 1;
       //cout << line << endl;   //cout << nb << " :  " << bitset<n>(nb) << endl;
       (*N)++;
@@ -111,7 +112,7 @@ map<__int128_t, unsigned int> read_datafile(unsigned int *N)    // O(N)  where N
   }
   else
   {
-      cout << "Unable to open file";
+      cout << endl << "                     ########## Unable to open file ##########" << endl << endl;
       (*N) = 0;
   }
 
@@ -172,17 +173,22 @@ void Print_File_Nset (map<__int128_t, unsigned int> Nset, unsigned int N, string
 // Rem: must have m <= n 
 __int128_t transform_mu_basis(__int128_t mu, list<__int128_t> basis)
 {
-  __int128_t un_i = 1;
+  __int128_t un_i = 1, proj;
   __int128_t final_mu = 0;
 
   list<__int128_t>::iterator phi_i;
 
   for(phi_i = basis.begin(); phi_i != basis.end(); ++phi_i)
   {
-    if ( (bitset<n>( (*phi_i) & mu ).count() % 2) == 1) // odd number of 1, i.e. sig_i = 1
-      {
-        final_mu += un_i;
-      }
+    proj = (*phi_i) & mu;
+    bitset<n> hi{ static_cast<unsigned long long>(proj >> 64) },
+            lo{ static_cast<unsigned long long>(proj) },
+            bits{ (hi << 64) | lo };
+
+    if ( (bits.count() % 2) == 1) // odd number of 1, i.e. sig_i = 1
+    {
+      final_mu += un_i;
+    }
     un_i = (un_i << 1);
   }
 
@@ -212,14 +218,14 @@ map<__int128_t, unsigned int> build_Kset(map<__int128_t, unsigned int> Nset, lis
 //Build Kset:
   for (it = Nset.begin(); it!=Nset.end(); ++it)
   {
-    s = it->first;       // state s
-    ks = it->second;    // # of times s appears in the data set
-    sig_m = transform_mu_basis(s, Basis);
-//    sig_m = bitset<m>(bitset<m>(mu).to_string()).to_ulong(); //bitset<m>(mu).to_ulong(); // mu|m
-    if (print_bool)  {  cout << bitset<n>(s) << " \t" << ": \t" << bitset<n>(sig_m) << endl; }
+      s = it->first;       // state s
+      ks = it->second;    // # of times s appears in the data set
+      sig_m = transform_mu_basis(s, Basis);
+      //    sig_m = bitset<m>(bitset<m>(mu).to_string()).to_ulong(); //bitset<m>(mu).to_ulong(); // mu|m
+      if (print_bool)  {  cout << bitset<n>(s) << " \t" << ": \t" << bitset<n>(sig_m) << endl; }
 
-    Kset[sig_m] += ks;
-    //Kset[mu_m].second.push_back(make_pair(mu, N_mu));
+      Kset[sig_m] += ks;
+      //Kset[mu_m].second.push_back(make_pair(mu, N_mu));
   }
   cout << endl;
 
