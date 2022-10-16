@@ -277,6 +277,7 @@ double Var_of_Inf(map<unsigned int, __int128_t> Partition1, map<unsigned int, __
 
             p2 = (double)(bits2.count()) / (double)(n);
             p12 = (double)(bits12.count()) / (double)(n);
+            
             if (p12 != 0)
             {
                 I += p12 * log(p12 / (p1 * p2));
@@ -285,5 +286,5 @@ double Var_of_Inf(map<unsigned int, __int128_t> Partition1, map<unsigned int, __
         }
     }
     if (H == 0) { return 0; }
-    else { return 1 + I / H; }
+    else { return 1 + I/H; }
 }

@@ -1,4 +1,4 @@
-// To compile: g++ -std=c++11 -O3 main.cpp Operations_OnData.cpp LogE.cpp LogL.cpp Complexity.cpp Basis_Choice.cpp RandomPart.cpp 
+// To compile: g++ -std=c++11 -O3 main.cpp Operations_OnData.cpp LogE.cpp LogL.cpp Complexity.cpp info_quant.cpp metropolis.cpp best_basis.cpp
 // To run: time ./a.out
 //
 #define _USE_MATH_DEFINES
@@ -223,7 +223,7 @@ map<unsigned int, __int128_t> Matrix2(map<__int128_t, unsigned int> Kset, unsign
 
     // ********* HIERARCHICAL MERGING ****************
     while (Best_MCM_Partition.size() > 1 && (!stop))
-    {        
+    {
         Diff_LogE_best = 0;
         LogE_merged = 0, LogE_unmerged = 0;
 
@@ -261,9 +261,9 @@ map<unsigned int, __int128_t> Matrix2(map<__int128_t, unsigned int> Kset, unsign
 
         for (it1 = Best_MCM_Partition.begin(); it1 != Best_MCM_Partition.end(); it1++)
         {
-            if (((*it1).first == i_keep) || ((*it1).first == i_erase)) 
-            { 
-                continue; 
+            if (((*it1).first == i_keep) || ((*it1).first == i_erase))
+            {
+                continue;
             }
 
             if ((*it1).first > i_keep)
@@ -285,12 +285,12 @@ map<unsigned int, __int128_t> Matrix2(map<__int128_t, unsigned int> Kset, unsign
             }
 
             if ((logE_Mat[i_mat] >= 0) || (logE_Mat[i_mat2] >= 0))
-            { 
-                logE_Mat[i_mat] = 0; 
+            {
+                logE_Mat[i_mat] = 0;
             }
             else { counter++; }
         }
-        
+
         Best_MCM_Partition[i_keep] = Best_MCM_Partition[i_keep] + Best_MCM_Partition[i_erase];
         Best_MCM_Partition.erase(i_erase);
 
@@ -315,41 +315,6 @@ int main()
     cout << endl;
 
     cout << endl << "*******************************************************************************************";
-    cout << endl << "**********************************  Sample data:  *****************************************";
-    cout << endl << "*******************************************************************************************" << endl;
-
-    //system(("C:/Users/sam/source/repos/MinCompSpin_Greedy_Private-main/INPUT/binary_networks/benchmark -f C:/Users/sam/source/repos/MinCompSpin_Greedy_Private-main/INPUT/binary_networks/flags.dat -mu " + to_string(0.2) + " > nul:").c_str());
-    list<Interaction> list_I = write_interactions(0.2, "datasets/network113.dat");
-    Sample_dataset(list_I, datafilename, 10000);
-
-    cout << endl << "*******************************************************************************************";
-    cout << endl << "******************************  Choice of the basis:  *************************************";
-    cout << endl << "*******************************************************************************************" << endl;
-    // *** Choice of the basis for building the Minimally Complex Model (MCM):
-
-    // *** Basis elements are written using the integer representation of the operator
-    // *** For instance, a basis element on the last two spin variable would be written: 
-    // ***      -->  Op = s1 s2           Spin operator
-    // ***      -->  Op = 000000011       Binary representation
-    // ***      -->  Op = 3               Integer representation   ( 000000011 = 3 )
-
-      // *** The basis can be specified by hand here:
-      /*__int128_t Basis_Choice[] = {36, 10, 3, 272, 260, 320, 130, 65, 4};    // Ex. This is the best basis for the USSC dataset
-
-      unsigned int m = sizeof(Basis_Choice) / sizeof(__int128_t);
-      list<__int128_t> Basis_li;  Basis_li.assign (Basis_Choice, Basis_Choice + m);
-      */
-
-      // *** Basis can also be read from a file:
-      // list<__int128_t> Basis_li = Read_BasisOp_IntegerRepresentation();
-
-      // *** Or one can use the original basis:
-    list<__int128_t> Basis_li = Original_Basis();
-
-    // *** Print info about the Basis:
-    //PrintTerm_Basis(Basis_li);
-
-    cout << endl << "*******************************************************************************************";
     cout << endl << "***********************************  Read the data:  **************************************";
     cout << endl << "*******************************************************************************************" << endl;
 
@@ -358,6 +323,8 @@ int main()
 
     if (N == 0) { return 0; } // Terminate program if the file can't be found
 
+    cout << endl << "                        ###### File has been read succesfully ######" << endl;
+
     //cout << endl << "*******************************************************************************************";
     //cout << endl << "*********************************  Change the data basis   ********************************";
     //cout << endl << "**************************************  Build Kset:  **************************************";
@@ -365,74 +332,50 @@ int main()
     //// *** Transform the data in the specified in Basis_SCModel[];
     ////map<__int128_t, unsigned int> Kset = build_Kset(Nset, Basis_li, false);
 
-    cout << lgamma((double)(N + (1UL << (10 - 1))));
-
     cout << endl << "*******************************************************************************************";
     cout << endl << "******************************  Hierachical merging result:  ******************************";
     cout << endl << "*******************************************************************************************" << endl;
 
-    map<unsigned int, __int128_t> fp1, fp2;
     // *** Calculate the optimal partition
     auto start = chrono::system_clock::now();
-    fp1 = Matrix(Kset, N);
+    map<unsigned int, __int128_t> fp1 = Matrix(Kset, N);
     auto end = chrono::system_clock::now();
-
-    // *** Check if the partition is valid
-    if (!check_partition(fp1)) { cout << "Result is invalid! A node appears in more than one community!" << endl << endl; }
 
     // *** Time it takes to find partition
     chrono::duration<double> elapsed = end - start;
-    
+
     cout << "######### EMPERICAL #########" << endl;
+    // Entropy of dataset
     double H = Entropy(Kset, N);
-    cout << "H : " << H << ". Range: [0, " << N << "]" << endl << endl;
+    cout << "H : " << H << ". Range: [0, " << n << "]" << endl << endl;
 
     cout << "#########  GREEDY   #########" << endl;
-    double LE = LogE_MCM(Kset, fp1, N);
+    // Log evidence of MCM
+    double LE_g = LogE_MCM(Kset, fp1, N);
     Print_Partition(fp1);
-    
-    map<__int128_t, double> greedy_prob = MCM_distr(Kset, fp1, N);
-    map<__int128_t, double> emp_prob = emp_dist(Kset, N);
-    double JSD = JS_divergence(greedy_prob, emp_prob, N);
 
-    cout << "Elapsed time    : " << elapsed.count() << "s" << endl;
-    cout << "Log-evidence    : " << LE << endl;
-    cout << "JSD(emp || mcm) : " << JSD << endl << endl;
+    cout << "Elapsed time      : " << elapsed.count() << "s" << endl;
+    cout << "Log-evidence      : " << LE_g << endl;
+    cout << "Average comm size : " << (double)n / (double)fp1.size() << endl << endl;
 
-    //**********************************************
-    //******** MATRIX 2 ****************************
-    //**********************************************
+    cout << "#########  THEORETICAL   #########" << endl;
+    map<unsigned int, __int128_t> fp2 = read_communities(communityfile);
 
-    //start = chrono::system_clock::now();
-    //fp2 = Matrix2(Kset, N);
-    //end = chrono::system_clock::now();
-
-    //// *** Check if the partition is valid
-    //if (!check_partition(fp2)) { cout << "Result is invalid! A node appears in more than one community!" << endl << endl; }
-
-    //// *** Time it takes to find partition
-    //elapsed = end - start;
-    //cout << endl << "Elapsed time: " << elapsed.count() << "s" << endl << endl;
-
-    fp2 = read_communities("datasets/community113.dat");
-
-    cout << "#########   EXACT   #########" << endl;
+    double LE_t = LogE_MCM(Kset, fp2, N);
     Print_Partition(fp2);
 
-    map<__int128_t, double> exact_prob = MCM_distr(Kset, fp2, N);
-    LE = LogE_MCM(Kset, fp2, N);
-    cout << "Log-evidence    : " << LE << endl;
-    
-    JSD = JS_divergence(exact_prob, emp_prob, N);
-    cout << "JSD(emp || mcm) : " << JSD << endl << endl;
+    cout << "Log-evidence      : " << LE_t << endl;
+    cout << "Average comm size : " << (double)n / (double)fp2.size() << endl << endl;
 
-    JSD = JS_divergence(exact_prob, greedy_prob, N);
+    cout << "#########  COMPARATIVE MEASURES   #########" << endl;
+    double VOI = Var_of_Inf(fp1, fp2);
+    double NMI = Norm_Mut_info(fp1, fp2);
+    string istrue = is_subset(fp1, fp2) ? "Yes" : "No";
 
-    cout << "####### COMPARE GREEDY OUTCOUME TO EXACT RESULT #######" << endl;
-    cout << "Jensen-Shannon divergence:     " << JSD << endl;
-
-    cout << "Variation of information:      " << Var_of_Inf(fp1, fp2) << endl;
-    cout << "Normalized mutual information: " << Norm_Mut_info(fp1, fp2) << endl << endl;
+    cout << "Is MCM_g \'subset\' of MCM_t    : " << istrue << endl;
+    cout << "Variation of Information      : " << VOI << endl;
+    cout << "Normalized Mutual Information : " << NMI << endl;
+    cout << "Difference in Log-Evidence    : " << LE_g - LE_t << endl << endl;
 
     return 0;
 }
