@@ -69,6 +69,40 @@ map<unsigned int, list<Interaction>> hypergraph_interactions(double J, unsigned 
     return I_list;
 }
 
+/*
+list<Interaction> write_interactions(double J, string file)
+{
+    string line, line2;
+    list<Interaction> I_list;
+    Interaction I;
+
+    __int128_t Op = 1;
+    Op <<= (n - 1);
+
+    bool flag = false;
+
+    // Open file to read network
+    ifstream myfile(file.c_str());
+    if (myfile.is_open())
+    {
+        while (getline(myfile, line))
+        {
+            stringstream ss(line);
+            I.Op = 0;
+            I.g = J;
+            while (getline(ss, line2, '\t'))
+            {
+                if ((Op >> stoi(line2) - 1) < I.Op) { flag = true; }
+                I.Op += (Op >> (stoi(line2) - 1));
+            }
+            if (flag) { flag = false; continue; }
+            I_list.push_back(I);
+        }
+        myfile.close();
+    }
+    return I_list;
+}*/
+
 map<unsigned int, list<Interaction>> write_interactions_metropolis(double J, string file)
 {
     string line, line2;

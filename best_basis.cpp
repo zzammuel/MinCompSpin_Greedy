@@ -276,7 +276,7 @@ void printfile_BestBasis(vector<pair<Operator, bool>> Op, double Nd, string name
 //  cout << endl << "---> This " << Op.size() << " basis operators define a basis transformation from";
 //  cout << " the basis of the n = " << n << " pure spin operators." << endl;
 }
-
+/*
 list<__int128_t> Original_basis()
 {
   list<__int128_t> Basis_li;
@@ -287,4 +287,4 @@ list<__int128_t> Original_basis()
     Op <<= 1;
   }
   return Basis_li;
-}
+}*/

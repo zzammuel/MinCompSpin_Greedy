@@ -1,4 +1,4 @@
-// To compile: g++ -std=c++11 -O3 main.cpp Operations_OnData.cpp LogE.cpp LogL.cpp Complexity.cpp info_quant.cpp metropolis.cpp best_basis.cpp
+// To compile: g++ -std=c++11 -O3 main.cpp Operations_OnData.cpp LogE.cpp LogL.cpp Complexity.cpp info_quant.cpp best_basis.cpp Basis_Choice.cpp P_s.cpp metropolis.cpp
 // To run: time ./a.out
 //
 #define _USE_MATH_DEFINES
@@ -22,6 +22,7 @@ using namespace std;
 /********************************************************************/
 #include "data.h"
 #include "library.h"
+//#include "library_Metropolis.h"
 
 using namespace std::chrono;
 /******************************************************************************/
@@ -58,6 +59,7 @@ map<unsigned int, __int128_t> Matrix(map<__int128_t, unsigned int> Kset, unsigne
     map<unsigned int, __int128_t> Best_MCM_Partition;  __int128_t Op = 1;
     map<unsigned int, double> Best_MCM_LogE_Part;
 
+    cout << "**** Filling in the nxn-triangular Matrix: ****" << endl;
     double* logE_Mat = (double*)malloc(r * (r - 1) / 2 * sizeof(double));
 
     for (int i = 0; i < r - 1; i++)
@@ -87,7 +89,8 @@ map<unsigned int, __int128_t> Matrix(map<__int128_t, unsigned int> Kset, unsigne
     int i_keep, i_erase, i_mat; __int128_t new_part;   // define variables for merging
 
     int k = 0, iteration = 0;
-
+    
+    cout << "**** Start Merging: ****" << endl;
     // ********* HIERARCHICAL MERGING ****************
     while (Best_MCM_Partition.size() > 1 && (!stop))
     {
@@ -179,6 +182,7 @@ map<unsigned int, __int128_t> Matrix(map<__int128_t, unsigned int> Kset, unsigne
         Best_MCM_LogE_Part.erase(i_erase);
 
         iteration++;
+        cout << "Just done with iteration " << iteration << endl;
     } // End While
 
     return Best_MCM_Partition;
@@ -319,18 +323,39 @@ int main()
     cout << endl << "*******************************************************************************************" << endl;
 
     unsigned int N = 0; // will contain the number of datapoints in the dataset
-    map<__int128_t, unsigned int> Kset = read_datafile(&N);
+    map<__int128_t, unsigned int> Nset = read_datafile(&N);
 
     if (N == 0) { return 0; } // Terminate program if the file can't be found
 
     cout << endl << "                        ###### File has been read succesfully ######" << endl;
+    cout << "Number of datapoints = " << N << endl;
+    cout << "Number of different observed states = " << Nset.size() << endl;
+
+
+    cout << endl << "*******************************************************************************************";  
+    cout << endl << "******************************  CHOICE OF THE BASIS:  *************************************";
+    cout << endl << "*******************************************************************************************" << endl;
+
+//    list<__int128_t> Basis_li = Original_Basis();  // original basis of the data: this is the most natural choice a priori
+
+  // *** The basis can also be read from a file:
+//    list<__int128_t> Basis_li = Read_BasisOp_IntegerRepresentation();
+   list<__int128_t> Basis_li = Read_BasisOp_BinaryRepresentation();
+
+    PrintTerm_Basis(Basis_li);
+
+/*    __int128_t test = (un << 63)+(un << 64); // + (un << 66);
+    cout << "Number of bits of " << bitset<67>(test) << " is " << count_bits_bis(test) << endl;
+    test = (test << 1);
+    cout << "Number of bits of " << bitset<67>(test) << " is " << count_bits_bis(test) << endl;
+*/
 
     //cout << endl << "*******************************************************************************************";
     //cout << endl << "*********************************  Change the data basis   ********************************";
     //cout << endl << "**************************************  Build Kset:  **************************************";
     //cout << endl << "*******************************************************************************************" << endl;
     //// *** Transform the data in the specified in Basis_SCModel[];
-    ////map<__int128_t, unsigned int> Kset = build_Kset(Nset, Basis_li, false);
+    map<__int128_t, unsigned int> Kset = build_Kset(Nset, Basis_li, false);
 
     cout << endl << "*******************************************************************************************";
     cout << endl << "******************************  Hierachical merging result:  ******************************";
@@ -353,6 +378,14 @@ int main()
     // Log evidence of MCM
     double LE_g = LogE_MCM(Kset, fp1, N);
     Print_Partition(fp1);
+
+    pair<bool, unsigned int> test_part = check_partition(fp1);
+
+    cout << "Is it a proper partition? " << (test_part.first) << endl;
+    cout << "Rank = " << (test_part.second) << endl << endl;
+
+    PrintFile_StateProbabilites_NewBasis(Kset, fp1, N, "SCOTUS");
+    PrintFile_StateProbabilites_OriginalBasis(Nset, Basis_li, fp1, N, "SCOTUS");
 
     cout << "Elapsed time      : " << elapsed.count() << "s" << endl;
     cout << "Log-evidence      : " << LE_g << endl;

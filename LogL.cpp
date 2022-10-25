@@ -78,7 +78,7 @@ double LogL_SubCM(map<__int128_t, unsigned int> Kset, __int128_t Ai, unsigned in
 //check if *Partition* is an actual partition of the basis elements, 
 // i.e., that no basis element appears in more than 1 part of the partition.
 // i.e., that each basis element only appears in a single part of the partition.
-bool check_partition(map<uint32_t, uint32_t> Partition);
+//bool check_partition(map<uint32_t, uint32_t> Partition);
 
 double LogL_MCM(map<__int128_t, unsigned int> Kset, map<unsigned int, __int128_t> Partition, unsigned int N, unsigned int r = n, bool print_bool = false)
 //double LogL_MCM(map<uint32_t, unsigned int > Kset, map<uint32_t, uint32_t> Partition, unsigned int N, bool print_bool = false)

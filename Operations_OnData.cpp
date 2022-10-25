@@ -13,39 +13,6 @@
 /********************************************************************/
 #include "data.h"
 
-list<Interaction> write_interactions(double J, string file)
-{
-    string line, line2;
-    list<Interaction> I_list;
-    Interaction I;
-
-    __int128_t Op = 1;
-    Op <<= (n - 1);
-
-    bool flag = false;
-
-    // Open file to read network
-    ifstream myfile(file.c_str());
-    if (myfile.is_open())
-    {
-        while (getline(myfile, line))
-        {
-            stringstream ss(line);
-            I.Op = 0;
-            I.g = J;
-            while (getline(ss, line2, '\t'))
-            {
-                if ((Op >> stoi(line2) - 1) < I.Op) { flag = true; }
-                I.Op += (Op >> (stoi(line2) - 1));
-            }
-            if (flag) { flag = false; continue; }
-            I_list.push_back(I);
-        }
-        myfile.close();
-    }
-    return I_list;
-}
-
 map<unsigned int, __int128_t> read_communities(string file)
 {
     map<unsigned int, __int128_t> Partition;
@@ -82,64 +49,44 @@ map<unsigned int, __int128_t> read_communities(string file)
 map<__int128_t, unsigned int> read_datafile(unsigned int *N, string file = datafilename)    // O(N)  where N = data set size
 {
     string line, line2;     char c = '1';
-  __int128_t nb = 0, Op;
-  (*N) = 0;            // N = dataset size
-  //cout << endl << "--->> Read \"" << datafilename << "\",\t Build Nset...";
+    __int128_t nb = 0, Op;
+    (*N) = 0;            // N = dataset size
+    //cout << endl << "--->> Read \"" << datafilename << "\",\t Build Nset...";
 
 // ***** data are store in Nset:  ********************************
-  map<__int128_t, unsigned int> Nset; // Nset[mu] = #of time state mu appears in the data set
+    map<__int128_t, unsigned int> Nset; // Nset[mu] = #of time state mu appears in the data set
 
-  ifstream myfile (file.c_str());
-  if (myfile.is_open())
-  {
-    while ( getline (myfile,line))
+    ifstream myfile (file.c_str());
+    if (myfile.is_open())
     {
-        Op = 1;
-        Op = (Op << n - 1);
-        nb = 0;
-        line2 = line.substr (0,n);          //take the n first characters of line
-        for (auto &elem: line2)
+        while ( getline (myfile,line))
         {
-            if (elem == c) { nb += Op; }
-            Op = Op >> 1;
+            line2 = line.substr (0,n);          //take the n first characters of line
+            Op = un << (n - 1);
+            nb = 0;
+            for (auto &elem: line2)     //convert string line2 into a binary integer
+            {
+                if (elem == c) { nb += Op; }
+                Op = Op >> 1;
+            }
+            Nset[nb] += 1;
+            //cout << line << endl;   //cout << nb << " :  " << bitset<n>(nb) << endl;
+            (*N)++;
         }
-        
-      Nset[nb] += 1;
-      //cout << line << endl;   //cout << nb << " :  " << bitset<n>(nb) << endl;
-      (*N)++;
+        myfile.close();
     }
-    myfile.close();
-  }
-  else
-  {
-      cout << endl << "                     ########## Unable to open file ##########" << endl << endl;
-      (*N) = 0;
-  }
-
-  //cout << "\t\t data size N = " << (*N) << endl;
-
-  return Nset;
+    else
+    {
+        cout << endl << "                     ########## Unable to open file ##########" << endl << endl;
+        //(*N) = 0;
+    }
+    //cout << "\t\t data size N = " << (*N) << endl;
+    return Nset;
 }
 
-/*
-void Print_File_Nset(map<__int128_t, unsigned int> Nset)
-{
-  map<__int128_t, unsigned int>::iterator it;
-  it=Nset.begin();
-  __int128_t s;
-
-//  s=it->first;
-//  cout << s << endl;  
-
-//  for(it=Nset.begin(); it!=Nset.end(); it++)
-  for (int i=0; i<10; i++)
-  {
-    //s=it->first;
-    cout << (*it).first << "\t" << (*it).second << endl;
-    it++;
-  }
-}*/
-
+/******************************************************************************/
+/**************************     PRINT Nset   **********************************/
+/******************************************************************************/
 void Print_File_Nset (map<__int128_t, unsigned int> Nset, unsigned int N, string OUTPUTfilename)
 // map.second = nb of time that the state map.first appears in the data set
 {
