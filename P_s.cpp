@@ -20,7 +20,7 @@ map<__int128_t, unsigned int> Build_Kset_ba(map<__int128_t, unsigned int> Kset, 
   __int128_t s;        // state
   unsigned int ks=0; // number of time state s appear in the dataset
 
-  cout << "--->> Build Kset for SC Model based on " << bitset<n>(Ai) << " for MCM.." << endl << endl;
+  //cout << "--->> Build Kset for SC Model based on " << bitset<n>(Ai) << " for MCM.." << endl << endl;
 
 //Build Kset_ba:
   for (it = Kset.begin(); it!=Kset.end(); ++it)
@@ -129,6 +129,8 @@ void PrintFile_StateProbabilites_NewBasis(map<__int128_t, unsigned int > Kset, m
   map<__int128_t, Proba>::iterator it_P;
 
   string Psig_filename = filename + "_DataVSMCM_Psig.dat";
+
+  cout << "--->> Print the state probabilities P(sig) in the file: \'" << Psig_filename << "\'" << endl << endl;
 
   fstream file_P_sig((OUTPUT_directory + Psig_filename), ios::out);
   file_P_sig << "## 1:sig \t 2:P_D(sig) \t 3:P_MCM(sig)" << endl;
