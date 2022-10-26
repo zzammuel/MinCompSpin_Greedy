@@ -7,31 +7,21 @@ using namespace std;
 /********************************************************************/
 
 // number of binary (spin) variables:
-const unsigned int n = 9; //25; //25; //120;  
+const unsigned int n = 9; //120;  
 
-// INPUT DATA FILES (optional):
-const string datafilename = "INPUT/SCOTUS_n9_N895_Data.dat"; // "INPUT/Big5PT.sorted"; //"INPUT/sampled.dat"; //
+// INPUT DATA FILES (optional):  
+// the input datafile can also be specified directly in the main() function, as an argument of the function "read_datafile()":
+const string datafilename = "INPUT/SCOTUS_n9_N895_Data.dat"; //"INPUT/sampled.dat";
 
 // INPUT BASIS FILES (optional):
-const string basis_IntegerRepresentation_filename = "INPUT/SCOTUS_n9_Basis_Integer.dat";        // (optional) Input basis file 
+const string basis_IntegerRepresentation_filename = "INPUT/SCOTUS_n9_BestBasis_Integer.dat";        // (optional) Input basis file 
 const string basis_BinaryRepresentation_filename = "INPUT/SCOTUS_n9_BestBasis_Binary.dat";      // (optional) Input basis file
 
-// INPUT MCM FILES (optional): // Exact community: Choice of a theoretical community to compare with for instance:
-const string communityfile = "INPUT/SCOTUS_Communities.dat"; //"INPUT/community.dat";
+// INPUT MCM FILES (optional): // For example: choice of a community to compare with the uncovered community:
+const string communityfile = "INPUT/SCOTUS_Communities_inBestBasis.dat"; //"INPUT/community.dat";
 
 // OUTPUT FOLDER:
 const string OUTPUT_directory = "OUTPUT/";
-
-/********************************************************************/
-/********************    NETWORK CONSTANTS    ***********************/
-/********************************************************************/
-// File to store test results
-const string GNdatafile = "INPUT/Test.dat";
-
-//const unsigned int nNodes = 20;
-
-    // Files for generating network data
-    const string networkfile = "INPUT/network.dat";
 
 
 /********************************************************************/
@@ -39,6 +29,19 @@ const string GNdatafile = "INPUT/Test.dat";
 /********************************************************************/
 const __int128_t un = 1;
 const __int128_t NOp_tot = (un << n) - 1;
+
+
+/********************************************************************/
+/*********************    Proba Structure    ************************/
+/********************************************************************/
+struct Proba {
+    __int128_t s;         // state in the original basis
+    __int128_t sig;       // state in the new basis
+
+    double P_D_s = 1.;    // empirical probability of s  
+    double P_D_sig = 1.;  // empirical probability of sig --> this should be the same then s if r=n, i.e. if the MCM models all the n spins
+    double P_MCM = 1.;  // model probability of s 
+};
 
 
 /********************************************************************/
@@ -51,6 +54,19 @@ const __int128_t NOp_tot = (un << n) - 1;
         double av_M;      // average in the Model
         double av_D;      // average in the generated Data
     };
+
+
+/********************************************************************/
+/********************    NETWORK CONSTANTS    ***********************/
+/********************************************************************/
+// File to store test results
+const string GNdatafile = "INPUT/Test.dat";
+
+//const unsigned int nNodes = 20;
+
+// Files for generating network data
+const string networkfile = "INPUT/network.dat";
+
 
 /********************************************************************/
 /****************    FOR CHOICE OF THE BEST BASIS    ****************/
@@ -87,15 +103,3 @@ const unsigned int alpha = 3;
     const string basis_FromIndices_filename = "INPUT/Big5PT_Best_Basis.dat";
     const string MCM_FromIndices_filename = "INPUT/Big5PT_Best_MCM_7.dat";
 
-
-/********************************************************************/
-/**************************    Structure    *************************/
-/********************************************************************/
-struct Proba {
-    __int128_t s;         // state in the original basis
-    __int128_t sig;       // state in the new basis
-
-    double P_D_s = 1.;    // empirical probability of s  
-    double P_D_sig = 1.;  // empirical probability of sig --> this should be the same then s if r=n, i.e. if the MCM models all the n spins
-    double P_MCM = 1.;  // model probability of s 
-};
